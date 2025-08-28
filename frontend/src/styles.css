@@ -1,34 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Base ---------- */
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6;
-    margin: 0;
-    padding: 0;
+  @apply font-sans bg-gray-50 text-gray-800;
 }
 
-.grid {
-    display: grid;
-    gap: 1rem;
-}
-
-.min-h-screen {
-    min-height: 100vh;
-}
-
+/* ---------- Cards ---------- */
 .card {
-    background-color: white;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  @apply bg-white rounded-2xl p-6 border border-gray-200 shadow-md transition-shadow duration-300;
 }
 
-.text-income {
-    color: #16a34a; /* verde */
+.card:hover {
+  @apply shadow-xl;
 }
 
-.text-expense {
-    color: #dc2626; /* rojo */
+/* ---------- Form ---------- */
+.form-container {
+  @apply bg-white rounded-2xl p-6 mb-6 shadow-md transition-shadow duration-300;
 }
 
-.text-balance {
-    color: #2563eb; /* azul */
+.form-title {
+  @apply text-xl font-bold text-blue-600 flex items-center mb-4;
+}
+
+.input-field {
+  @apply w-full p-2.5 border border-gray-300 rounded-lg mb-3 transition duration-300;
+}
+
+.input-field:focus {
+  @apply outline-none border-blue-600 ring-2 ring-blue-200;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  @apply inline-flex items-center justify-center bg-blue-600 text-white font-medium rounded-lg py-2 px-4 w-full transition-colors duration-300 cursor-pointer;
+}
+
+.btn:hover {
+  @apply bg-blue-700;
+}
+
+/* ---------- Colores para datos ---------- */
+.text-green {
+  @apply text-green-600 font-semibold;
+}
+
+.text-red {
+  @apply text-red-600 font-semibold;
+}
+
+.text-purple {
+  @apply text-purple-600 font-semibold;
+}
+
+.text-blue {
+  @apply text-blue-600 font-bold;
+}
+
+/* ---------- Iconos FA ---------- */
+.icon-trash::before {
+  font-family: "Font Awesome 6 Free";
+  content: "\f1f8"; /* fa-trash */
+  font-weight: 900;
+}
+
+.icon-plus::before {
+  font-family: "Font Awesome 6 Free";
+  content: "\f067"; /* fa-plus */
+  font-weight: 900;
+}
+
+.icon-check::before {
+  font-family: "Font Awesome 6 Free";
+  content: "\f058"; /* fa-check-circle */
+  font-weight: 900;
+}
+
+/* ---------- Categorías ---------- */
+.categoria-vivienda { @apply text-blue-500 font-semibold; }
+.categoria-servicios { @apply text-orange-500 font-semibold; }
+.categoria-impuestos { @apply text-red-500 font-semibold; }
+.categoria-seguros { @apply text-green-500 font-semibold; }
+.categoria-ahorro { @apply text-purple-500 font-semibold; }
+.categoria-deudas { @apply text-yellow-500 font-semibold; }
+
+/* Focus general */
+input:focus, select:focus {
+  @apply border-blue-500 ring-2 ring-blue-300 transition duration-300;
+}
+
+button {
+  @apply transition-all duration-300;
 }

@@ -1,6 +1,10 @@
-package com.ejemplo.gastos;
+package com.jesusygeremias.controllers;
 
+import com.jesusygeremias.model.gastos.GastoMensual;
+import com.jesusygeremias.persistence.GastoMensualRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +22,6 @@ public class GastoController {
         return repo.findAll();
     }
 
-    @PostMapping
-    public GastoMensual crear(@RequestBody GastoMensual gasto) {
-        return repo.save(gasto);
-    }
-
     @PutMapping("/{id}")
     public GastoMensual actualizar(@PathVariable Long id, @RequestBody GastoMensual gasto) {
         gasto.setId(id);
@@ -33,4 +32,15 @@ public class GastoController {
     public void eliminar(@PathVariable Long id) {
         repo.deleteById(id);
     }
+
+    @PostMapping
+    public ResponseEntity<?> addGasto(@RequestBody GastoMensual gasto) {
+        try {
+            GastoMensual saved = repo.save(gasto);
+            return ResponseEntity.ok(saved);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("Ya existe un gasto con esa categoría en este mes y año");
+        }
+    }
+
 }

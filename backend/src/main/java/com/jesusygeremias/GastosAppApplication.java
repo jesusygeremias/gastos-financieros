@@ -1,4 +1,4 @@
-package com.ejemplo.gastos;
+package com.jesusygeremias;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

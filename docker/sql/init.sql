@@ -1,32 +1,59 @@
 -- Crear la base de datos solo si no existe
 DO
 $$
-    BEGIN
-        IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'misgastos') THEN
-            CREATE DATABASE misgastos;
-        END IF;
-    END
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'misgastos') THEN
+        CREATE DATABASE misgastos;
+    END IF;
+END
 $$;
 
 -- Asegurar contraseña del usuario
 ALTER USER postgres WITH PASSWORD 'mi_password';
 
--- Crear tabla dentro de misgastos
--- Esta parte se ejecuta automáticamente solo si el contenedor se inicializa por primera vez
--- Para ejecutar en init.sql, hay que conectarse a la base de datos específica:
+-- Conectarse a la base de datos
 \connect misgastos
 
-CREATE TABLE IF NOT EXISTS gasto_mensual (
-                                             id SERIAL PRIMARY KEY,
-                                             mes VARCHAR(20),
-                                             salario NUMERIC(10,2),
-                                             comunidad NUMERIC(10,2),
-                                             garaje NUMERIC(10,2),
-                                             internet NUMERIC(10,2),
-                                             electricidad NUMERIC(10,2),
-                                             agua NUMERIC(10,2),
-                                             pac NUMERIC(10,2),
-                                             seguro NUMERIC(10,2),
-                                             revolut_ahorro NUMERIC(10,2),
-                                             revolut_corriente NUMERIC(10,2)
+-- Tabla de cuentas bancarias
+CREATE TABLE IF NOT EXISTS cuenta_bancaria (
+    id SERIAL PRIMARY KEY,
+    banco VARCHAR(50) NOT NULL,
+    saldo NUMERIC(10,2) NOT NULL DEFAULT 0,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    tipo_cuenta VARCHAR(50) NOT NULL
 );
+
+-- Tabla de gastos mensuales dinámica
+CREATE TABLE IF NOT EXISTS gasto_mensual (
+    id SERIAL PRIMARY KEY,
+    mes VARCHAR(20) NOT NULL,
+    anio INT NOT NULL,
+    categoria VARCHAR(50) NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
+    monto NUMERIC(10,2) NOT NULL,
+    cuenta_id INT REFERENCES cuenta_bancaria(id),
+    CONSTRAINT gasto_unico_mes_descripcion UNIQUE (mes, anio, descripcion)
+);
+
+-- Tabla de ingresos mensuales
+CREATE TABLE IF NOT EXISTS ingreso_mensual (
+    id SERIAL PRIMARY KEY,
+    descripcion VARCHAR(255),
+    monto NUMERIC(12,2) NOT NULL,
+    mes VARCHAR(20),
+    anio INT,
+    cuenta_id INT REFERENCES cuenta_bancaria(id)
+);
+
+-- Opcional: insertar algunas cuentas iniciales
+INSERT INTO cuenta_bancaria (banco, tipo_cuenta, saldo, activo)
+VALUES
+('Openbank', 'AHORRO', 0, TRUE),
+('Openbank', 'CORRIENTE', 0, TRUE),
+('Openbank', 'HIPOTECA', 0, TRUE),
+('Revolut', 'AHORRO', 0, TRUE),
+('Revolut', 'CORRIENTE', 0, TRUE),
+('ActivoBank', 'CORRIENTE', 0, TRUE),
+('Pluxee', 'RESTAURANTE', 0, TRUE),
+('Julia', 'CORRIENTE', 0, TRUE)
+ON CONFLICT DO NOTHING; -- evita duplicados si se reinicia el contenedor
