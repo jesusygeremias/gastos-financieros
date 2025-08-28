@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: gastos-postgres
+    environment:
+      POSTGRES_DB: misgastos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: >
+      postgres
+      -c listen_addresses='*'
+      -c logging_collector=on
+      -c log_directory='pg_log'
+      -c log_filename='postgresql-%a.log'
+      -c log_statement='all'
+
+  backend:
+    build:
+      context: ../backend          # ahora apunta a backend directo
+      dockerfile: Dockerfile       # Dockerfile en backend/
+    container_name: gastos-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/misgastos
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: mi_password
+      JAVA_TOOL_OPTIONS: >-
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+      - "5005:5005"   # puerto de debug
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: gastos-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
