@@ -52,39 +52,40 @@ export default function Dashboard() {
 
     // --- RECALCULAR SALDOS ---
     useEffect(() => {
-        let nuevosSaldos = cuentas.map(c => ({
+        const nuevos = cuentas.map(c => ({
             id: c.id,
             banco: c.banco,
             cuenta: `${c.banco} (${c.tipoCuenta || "Sin tipo"})`,
-            monto: c.saldo
+            monto: Number(c.saldo || 0)
         }));
 
         gastos.forEach(g => {
-            if (g.cuenta) {
-                const idx = nuevosSaldos.findIndex(s => s.id === g.cuenta.id);
-                if (idx !== -1) nuevosSaldos[idx].monto -= g.monto;
+            if (g?.cuenta?.id != null) {
+                const idx = nuevos.findIndex(s => s.id === g.cuenta.id);
+                if (idx !== -1) nuevos[idx].monto -= Number(g.monto || 0);
             }
         });
 
         ingresos.forEach(i => {
-            if (i.cuenta) {
-                const idx = nuevosSaldos.findIndex(s => s.id === i.cuenta.id);
-                if (idx !== -1) nuevosSaldos[idx].monto += i.monto;
+            if (i?.cuenta?.id != null) {
+                const idx = nuevos.findIndex(s => s.id === i.cuenta.id);
+                if (idx !== -1) nuevos[idx].monto += Number(i.monto || 0);
             }
         });
 
-        setSaldos(nuevosSaldos);
+        setSaldos(nuevos);
     }, [cuentas, gastos, ingresos]);
 
     // --- FUNCIONES PARA ACTUALIZAR SALDOS POR MOVIMIENTO ---
     const actualizarSaldos = (movimiento, tipo, revertir = false) => {
-        if (!movimiento.cuenta) return;
+        if (!movimiento?.cuenta?.id) return;
         setSaldos(prev =>
             prev.map(s => {
                 if (s.id === movimiento.cuenta.id) {
-                    let nuevoMonto = tipo === "gasto"
-                        ? (revertir ? s.monto + movimiento.monto : s.monto - movimiento.monto)
-                        : (revertir ? s.monto - movimiento.monto : s.monto + movimiento.monto);
+                    const amount = Number(movimiento.monto || 0);
+                    const nuevoMonto = tipo === "gasto"
+                        ? (revertir ? s.monto + amount : s.monto - amount)
+                        : (revertir ? s.monto - amount : s.monto + amount);
                     return { ...s, monto: nuevoMonto };
                 }
                 return s;
@@ -93,50 +94,62 @@ export default function Dashboard() {
     };
 
     // --- GASTOS ---
-    const addGasto = gasto => {
-        if (!gasto.cuenta) return;
-        setGastos([...gastos, gasto]);
+    const addGasto = (gasto) => {
+        if (!gasto?.cuenta?.id) return;
+        setGastos(prev => [...prev, gasto]);
         actualizarSaldos(gasto, "gasto");
     };
 
-    const updateGasto = updated => {
-        const old = gastos.find(g => g.id === updated.id);
-        if (!old?.cuenta || !updated?.cuenta) return;
-        setGastos(gastos.map(g => g.id === updated.id ? updated : g));
-        actualizarSaldos(old, "gasto", true);
-        actualizarSaldos(updated, "gasto");
+    const addGastosBulk = (nuevos) => {
+        if (!Array.isArray(nuevos) || nuevos.length === 0) return;
+        setGastos(prev => [...prev, ...nuevos]);
+        nuevos.forEach(g => g?.cuenta && actualizarSaldos(g, "gasto"));
     };
 
-    const deleteGasto = id => {
-        const gasto = gastos.find(g => g.id === id);
-        if (!gasto?.cuenta) return;
-        setGastos(gastos.filter(g => g.id !== id));
-        actualizarSaldos(gasto, "gasto", true);
+    const updateGasto = (updated) => {
+        setGastos(prev => {
+            const old = prev.find(g => g.id === updated.id);
+            if (!old?.cuenta || !updated?.cuenta) return prev;
+            actualizarSaldos(old, "gasto", true);
+            actualizarSaldos(updated, "gasto");
+            return prev.map(g => g.id === updated.id ? updated : g);
+        });
+    };
+
+    const deleteGasto = (id) => {
+        setGastos(prev => {
+            const gasto = prev.find(g => g.id === id);
+            if (gasto?.cuenta) actualizarSaldos(gasto, "gasto", true);
+            return prev.filter(g => g.id !== id);
+        });
     };
 
     // --- INGRESOS ---
-    const addIngreso = ingreso => {
-        if (!ingreso.cuenta) return;
-        setIngresos([...ingresos, ingreso]);
+    const addIngreso = (ingreso) => {
+        if (!ingreso?.cuenta?.id) return;
+        setIngresos(prev => [...prev, ingreso]);
         actualizarSaldos(ingreso, "ingreso");
     };
 
-    const updateIngreso = updated => {
-        const old = ingresos.find(i => i.id === updated.id);
-        if (!old?.cuenta || !updated?.cuenta) return;
-        setIngresos(ingresos.map(i => i.id === updated.id ? updated : i));
-        actualizarSaldos(old, "ingreso", true);
-        actualizarSaldos(updated, "ingreso");
+    const updateIngreso = (updated) => {
+        setIngresos(prev => {
+            const old = prev.find(i => i.id === updated.id);
+            if (!old?.cuenta || !updated?.cuenta) return prev;
+            actualizarSaldos(old, "ingreso", true);
+            actualizarSaldos(updated, "ingreso");
+            return prev.map(i => i.id === updated.id ? updated : i);
+        });
     };
 
-    const deleteIngreso = id => {
-        const ingreso = ingresos.find(i => i.id === id);
-        if (!ingreso?.cuenta) return;
-        setIngresos(ingresos.filter(i => i.id !== id));
-        actualizarSaldos(ingreso, "ingreso", true);
+    const deleteIngreso = (id) => {
+        setIngresos(prev => {
+            const ingreso = prev.find(i => i.id === id);
+            if (ingreso?.cuenta) actualizarSaldos(ingreso, "ingreso", true);
+            return prev.filter(i => i.id !== id);
+        });
     };
 
-    const saldoTotal = saldos.reduce((sum, c) => sum + c.monto, 0);
+    const saldoTotal = saldos.reduce((sum, c) => sum + Number(c.monto || 0), 0);
 
     return (
         <div className="min-h-screen p-6 bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
@@ -156,10 +169,7 @@ export default function Dashboard() {
                     <BarChart data={saldos}>
                         <XAxis dataKey="cuenta" tick={{ fill: "#4b5563", fontSize: 14 }} />
                         <YAxis tick={{ fill: "#4b5563", fontSize: 14 }} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: "#f9fafb", borderRadius: 8 }}
-                            itemStyle={{ color: "#111827" }}
-                        />
+                        <Tooltip contentStyle={{ backgroundColor: "#f9fafb", borderRadius: 8 }} itemStyle={{ color: "#111827" }} />
                         <Bar dataKey="monto" fill="#6366f1" radius={[6, 6, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
@@ -168,9 +178,9 @@ export default function Dashboard() {
             <IngresosForm cuentas={cuentas} addIngreso={addIngreso} />
             <IngresosList ingresos={ingresos} updateIngreso={updateIngreso} deleteIngreso={deleteIngreso} />
 
-            
+            <div className="my-8" />
 
-            <GastoForm cuentas={cuentas} addGasto={addGasto} />
+            <GastoForm cuentas={cuentas} addGasto={addGasto} addGastosBulk={addGastosBulk} />
             <GastoList gastos={gastos} updateGasto={updateGasto} deleteGasto={deleteGasto} />
         </div>
     );

@@ -2,48 +2,52 @@ import { useState } from "react";
 import { API_URL_INGRESOS } from "../api";
 
 export default function IngresosForm({ cuentas, addIngreso }) {
-    const [ingreso, setIngreso] = useState({
-        descripcion: "",
-        monto: "",
-        cuentaId: ""
-    });
+    const [ingreso, setIngreso] = useState({ descripcion: "", monto: "", cuentaId: "" });
 
     const handleChange = (field, value) => {
-        setIngreso({ ...ingreso, [field]: value });
+        setIngreso(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!ingreso.descripcion || !ingreso.monto || !ingreso.cuentaId) return;
+        if (!ingreso.descripcion || ingreso.monto === "" || !ingreso.cuentaId) return;
 
         const mesNombre = new Date().toLocaleString("es-ES", { month: "long" }).toUpperCase();
         const anioActual = new Date().getFullYear();
 
         const selectedCuenta = cuentas.find(c => c.id === parseInt(ingreso.cuentaId));
-        if (!selectedCuenta) return;
+        if (!selectedCuenta) {
+            alert("Cuenta no encontrada");
+            return;
+        }
 
-        const newIngreso = {
+        const payload = {
             descripcion: ingreso.descripcion,
             monto: parseFloat(ingreso.monto),
             mes: mesNombre,
             anio: anioActual,
-            cuenta: { ...selectedCuenta }
+            cuenta: { id: selectedCuenta.id }
         };
 
-        const res = await fetch(API_URL_INGRESOS, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newIngreso)
-        });
+        try {
+            const res = await fetch(API_URL_INGRESOS, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
 
-        if (res.ok) {
+            if (!res.ok) {
+                const text = await res.text();
+                alert(text);
+                return;
+            }
+
             const data = await res.json();
-            addIngreso(data); // Actualiza Dashboard y SaldosPorCuenta
-        } else {
-            alert(await res.text());
+            addIngreso(data);
+            setIngreso({ descripcion: "", monto: "", cuentaId: "" });
+        } catch (err) {
+            alert(err.message || "Error al enviar ingreso");
         }
-
-        setIngreso({ descripcion: "", monto: "", cuentaId: "" });
     };
 
     return (
@@ -55,19 +59,19 @@ export default function IngresosForm({ cuentas, addIngreso }) {
                     placeholder="Descripción"
                     value={ingreso.descripcion}
                     onChange={e => handleChange("descripcion", e.target.value)}
-                    className="p-3 border rounded-lg"
+                    className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 />
                 <input
                     type="number"
                     placeholder="Monto"
                     value={ingreso.monto}
                     onChange={e => handleChange("monto", e.target.value)}
-                    className="p-3 border rounded-lg"
+                    className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 />
                 <select
                     value={ingreso.cuentaId}
                     onChange={e => handleChange("cuentaId", e.target.value)}
-                    className="p-3 border rounded-lg"
+                    className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 >
                     <option value="">Seleccionar cuenta</option>
                     {cuentas.map(c => (

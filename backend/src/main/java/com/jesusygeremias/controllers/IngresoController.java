@@ -23,7 +23,6 @@ import java.util.List;
 public class IngresoController {
 
     private final IngresoRepository ingresoRepository;
-    private final CuentaBancariaRepository cuentaBancariaRepository;
 
     @GetMapping
     public List<IngresoMensual> getAll() {

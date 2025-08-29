@@ -1,7 +1,10 @@
 package com.jesusygeremias.controllers;
 
+import com.jesusygeremias.model.cuentas.CuentaBancaria;
 import com.jesusygeremias.model.gastos.GastoMensual;
+import com.jesusygeremias.persistence.CuentaBancariaRepository;
 import com.jesusygeremias.persistence.GastoMensualRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/gastos")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class GastoController {
 
-    @Autowired
-    private GastoMensualRepository repo;
+    private final GastoMensualRepository repo;
 
     @GetMapping
     public List<GastoMensual> listar() {
