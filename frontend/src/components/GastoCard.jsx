@@ -2,8 +2,7 @@ export default function GastoCard({ gasto, onDelete }) {
     const formatMonto = (monto) => monto.toFixed(2) + " €";
 
     const getColor = (monto) => {
-        if (monto > 0) return "text-green-600";
-        if (monto < 0) return "text-red-600";
+        if (monto > 0) return "text-red-600";
         return "text-gray-800";
     };
 

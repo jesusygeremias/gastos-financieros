@@ -30,7 +30,7 @@ export default function GastoForm({ cuentas, addGasto, addGastosBulk }) {
             if ([1,3,5,7,9,11].includes(mesActual)) defaults.push({ descripcion: "Agua", monto: 36, categoria: "Servicios", cuentaId: cuentaActivo.id });
             if (mesActual >= 2 && mesActual <= 10) defaults.push({ descripcion: "PAC IBI + IVTM", monto: 49.01, categoria: "Impuestos", cuentaId: cuentaActivo.id });
             const seguroMonto = mesActual === 9 ? 45.19 : 39.68;
-            defaults.push({ descripcion: "Seguro coche", monto: seguroMonto, categoria: "Seguros", cuentaId: cuentaActivo.id });
+            if ([9,10,11,12,1,2,3,4,5,6].includes(mesActual)) defaults.push({ descripcion: "Seguro coche", monto: seguroMonto, categoria: "Seguros", cuentaId: cuentaActivo.id });
         }
 
         if (hipotecaOpenbank) defaults.push({ descripcion: "Hipoteca", monto: 676.33, categoria: "Vivienda", cuentaId: hipotecaOpenbank.id });

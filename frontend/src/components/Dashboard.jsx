@@ -4,7 +4,7 @@ import GastoForm from "./GastoForm";
 import IngresosForm from "./IngresosForm";
 import IngresosList from "./IngresosList";
 import SaldosPorCuenta from "./SaldosPorCuenta";
-import { API_URL_CUENTAS, API_URL_GASTOS, API_URL_INGRESOS } from "../api";
+import { API_URL_CUENTAS, API_URL_GASTOS, API_URL_INGRESOS, API_URL_BACKUP } from "../api";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function Dashboard() {
@@ -169,12 +169,65 @@ export default function Dashboard() {
 
     const saldoTotal = saldos.reduce((sum, c) => sum + Number(c.monto || 0), 0);
 
+    // --- BACKUP FUNCTIONS ---
+    const exportBackup = async () => {
+        try {
+            const res = await fetch(`${API_URL_BACKUP}/export`);
+            if (!res.ok) throw new Error("Error al exportar backup");
+            const data = await res.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `backup_${new Date().toISOString()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const importBackup = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const json = JSON.parse(text);
+
+            const res = await fetch(`${API_URL_BACKUP}/import`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(json)
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            alert("Backup importado correctamente");
+            fetchCuentas();
+            fetchGastos();
+            fetchIngresos();
+        } catch (err) {
+            alert(err.message || "Error al importar backup");
+        }
+    };
+
     return (
         <div className="min-h-screen p-6 bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
-            <h1 className="text-4xl font-extrabold mb-8 text-center text-indigo-700 tracking-tight flex items-center justify-center">
+            <h1 className="text-4xl font-extrabold mb-6 text-center text-indigo-700 tracking-tight flex items-center justify-center">
                 <i className="fa fa-wallet mr-3 text-indigo-500"></i>
                 Dashboard Financiero
             </h1>
+
+            {/* --- BACKUP CARD --- */}
+            <div className="mb-8 bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition duration-300 flex flex-col md:flex-row items-center gap-4 justify-center">
+                <button onClick={exportBackup} className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 shadow-lg transition">
+                    Exportar Backup
+                </button>
+                <label className="bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 shadow-lg transition cursor-pointer">
+                    Importar Backup
+                    <input type="file" accept=".json" onChange={importBackup} className="hidden" />
+                </label>
+            </div>
 
             <SaldosPorCuenta data={saldos} saldoTotal={saldoTotal} />
 
