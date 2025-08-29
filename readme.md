@@ -50,7 +50,7 @@ gastos-financieros/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <REPO_URL>
+git clone https://github.com/jesusygeremias/gastos-financieros.git
 cd gastos-financieros
 ```
 
