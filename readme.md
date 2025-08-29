@@ -102,7 +102,7 @@ Se generará la carpeta `build/` lista para servir con Nginx (usado en Docker).
 
 ## Contacto / soporte
 
-- Desarrollador: Sergio Ruiz  
-- Email: <tu-email@ejemplo.com>  
+- Desarrollador: Sergio Ruiz Aragón
+- Email: <sergio.ruiz.aragon9@gmail.com>  
 - Proyecto mantenido bajo desarrollo personal.
 
