@@ -36,6 +36,7 @@ gastos-financieros/
 ├── docker/               # Configuración Docker Compose y scripts
 │   ├── docker-compose.yml
 │   └── sql/init.sql
+├── gastos.ps1            # Script PowerShell para levantar proyecto en Windows
 └── README.md
 ```
 
@@ -44,6 +45,7 @@ gastos-financieros/
 - Docker >= 24
 - Docker Compose >= 2.20
 - Node.js >= 20 (solo para desarrollo local si no se usa Docker)
+- PowerShell (Windows) si se usa el script `gastos.ps1`
 
 ## Instalación y ejecución
 
@@ -54,7 +56,9 @@ git clone https://github.com/jesusygeremias/gastos-financieros.git
 cd gastos-financieros
 ```
 
-### 2. Construir y levantar contenedores
+### 2. Levantar el proyecto
+
+#### Opción A: Usando Docker Compose
 
 ```bash
 docker-compose up --build
@@ -65,6 +69,16 @@ Esto levantará:
 - **Frontend:** `http://localhost:3000` (React + Tailwind)
 - **Backend:** `http://localhost:8080` (Spring Boot)
 - **Base de datos PostgreSQL:** puerto 5432
+
+#### Opción B: Usando PowerShell en Windows
+
+Ejecutar el script `gastos.ps1` en la carpeta raíz:
+
+```powershell
+.\gastos.ps1
+```
+
+El script realiza los mismos pasos que Docker Compose pero adaptado para entornos Windows.
 
 ### 3. Uso
 
@@ -98,7 +112,7 @@ Se generará la carpeta `build/` lista para servir con Nginx (usado en Docker).
 - Al usar “Cargar por defecto”, los gastos se insertan en bloque y luego pueden guardarse con un solo submit.
 - Todos los movimientos se actualizan dinámicamente en los saldos por cuenta.
 - Asegúrate de que las cuentas tengan `id` y `tipoCuenta` completos para evitar errores de backend.
-- Se recomienda usar `Docker Compose` para levantar toda la app y la base de datos de forma consistente.
+- Se recomienda usar `Docker Compose` o el script `gastos.ps1` para levantar toda la app y la base de datos de forma consistente.
 
 ## Contacto / soporte
 
