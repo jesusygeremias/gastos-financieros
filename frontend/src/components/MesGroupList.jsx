@@ -4,6 +4,7 @@ export default function MesGroupList({ items, deleteItem, updateItem, renderCard
     const [expandedMonths, setExpandedMonths] = useState({});
     const containersRef = useRef({});
 
+    // Agrupar items por mes y año
     const itemsPorMes = items.reduce((acc, item) => {
         const key = `${item.mes} ${item.anio}`;
         if (!acc[key]) acc[key] = [];
@@ -24,6 +25,17 @@ export default function MesGroupList({ items, deleteItem, updateItem, renderCard
         });
     }, [expandedMonths, items]);
 
+    // Función para borrar todos los items de un mes
+    const handleDeleteMonth = async (itemsMes) => {
+        for (const i of itemsMes) {
+            try {
+                await deleteItem(i.id); // deleteItem debe hacer fetch al backend y actualizar el estado
+            } catch (err) {
+                console.error("Error borrando item:", i, err);
+            }
+        }
+    };
+
     return (
         <div className="space-y-4">
             {Object.entries(itemsPorMes).map(([mesKey, itemsMes]) => {
@@ -41,11 +53,9 @@ export default function MesGroupList({ items, deleteItem, updateItem, renderCard
                                 </span>
                                 <button
                                     className="text-red-600 hover:text-red-800"
-                                    onClick={async (e) => {
+                                    onClick={(e) => {
                                         e.stopPropagation(); // evita toggle
-                                        for (const i of itemsMes) {
-                                            await deleteItem(i.id);
-                                        }
+                                        handleDeleteMonth(itemsMes);
                                     }}
                                 >
                                     <i className="fa fa-trash"></i>

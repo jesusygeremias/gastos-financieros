@@ -116,12 +116,18 @@ export default function Dashboard() {
         });
     };
 
-    const deleteGasto = (id) => {
-        setGastos(prev => {
-            const gasto = prev.find(g => g.id === id);
-            if (gasto?.cuenta) actualizarSaldos(gasto, "gasto", true);
-            return prev.filter(g => g.id !== id);
-        });
+    const deleteGasto = async (id) => {
+        try {
+            const res = await fetch(`${API_URL_GASTOS}/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Error al borrar gasto");
+            setGastos(prev => {
+                const gasto = prev.find(g => g.id === id);
+                if (gasto?.cuenta) actualizarSaldos(gasto, "gasto", true);
+                return prev.filter(g => g.id !== id);
+            });
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
     // --- INGRESOS ---
@@ -129,6 +135,12 @@ export default function Dashboard() {
         if (!ingreso?.cuenta?.id) return;
         setIngresos(prev => [...prev, ingreso]);
         actualizarSaldos(ingreso, "ingreso");
+    };
+
+    const addIngresosBulk = (nuevos) => {
+        if (!Array.isArray(nuevos) || nuevos.length === 0) return;
+        setIngresos(prev => [...prev, ...nuevos]);
+        nuevos.forEach(i => i?.cuenta && actualizarSaldos(i, "ingreso"));
     };
 
     const updateIngreso = (updated) => {
@@ -141,12 +153,18 @@ export default function Dashboard() {
         });
     };
 
-    const deleteIngreso = (id) => {
-        setIngresos(prev => {
-            const ingreso = prev.find(i => i.id === id);
-            if (ingreso?.cuenta) actualizarSaldos(ingreso, "ingreso", true);
-            return prev.filter(i => i.id !== id);
-        });
+    const deleteIngreso = async (id) => {
+        try {
+            const res = await fetch(`${API_URL_INGRESOS}/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Error al borrar ingreso");
+            setIngresos(prev => {
+                const ingreso = prev.find(i => i.id === id);
+                if (ingreso?.cuenta) actualizarSaldos(ingreso, "ingreso", true);
+                return prev.filter(i => i.id !== id);
+            });
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
     const saldoTotal = saldos.reduce((sum, c) => sum + Number(c.monto || 0), 0);
@@ -175,7 +193,7 @@ export default function Dashboard() {
                 </ResponsiveContainer>
             </div>
 
-            <IngresosForm cuentas={cuentas} addIngreso={addIngreso} />
+            <IngresosForm cuentas={cuentas} addIngreso={addIngreso} addIngresosBulk={addIngresosBulk} />
             <IngresosList ingresos={ingresos} updateIngreso={updateIngreso} deleteIngreso={deleteIngreso} />
 
             <div className="my-8" />
