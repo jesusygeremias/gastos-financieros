@@ -4,7 +4,6 @@ import GastoForm from "./GastoForm";
 import IngresosForm from "./IngresosForm";
 import IngresosList from "./IngresosList";
 import SaldosPorCuenta from "./SaldosPorCuenta";
-import InicializacionModal from "./InicializacionModal";
 import { API_URL_CUENTAS, API_URL_GASTOS, API_URL_INGRESOS, API_URL_BACKUP } from "../api";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -13,7 +12,6 @@ export default function Dashboard() {
     const [ingresos, setIngresos] = useState([]);
     const [cuentas, setCuentas] = useState([]);
     const [saldos, setSaldos] = useState([]);
-    const [showInicializacion, setShowInicializacion] = useState(false);
 
     // --- FETCH DATA ---
     const fetchCuentas = async () => {
@@ -51,13 +49,6 @@ export default function Dashboard() {
         fetchGastos();
         fetchIngresos();
     }, []);
-
-    // --- MOSTRAR MODAL INICIAL SI NO HAY DATOS ---
-    useEffect(() => {
-        if (cuentas.length > 0 && ingresos.length === 0 && gastos.length === 0) {
-            setShowInicializacion(true);
-        }
-    }, [cuentas, ingresos, gastos]);
 
     // --- RECALCULAR SALDOS ---
     useEffect(() => {
@@ -262,14 +253,6 @@ export default function Dashboard() {
 
             <GastoForm cuentas={cuentas} addGasto={addGasto} addGastosBulk={addGastosBulk} />
             <GastoList gastos={gastos} updateGasto={updateGasto} deleteGasto={deleteGasto} />
-
-            {showInicializacion && (
-                <InicializacionModal
-                    cuentas={cuentas}
-                    onClose={() => setShowInicializacion(false)}
-                    onImportBackup={importBackup}
-                />
-            )}
         </div>
     );
 }

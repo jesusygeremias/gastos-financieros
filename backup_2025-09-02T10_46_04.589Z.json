@@ -57,7 +57,68 @@
       "tipoCuenta": "CORRIENTE"
     }
   ],
-  "gastos": [],
+  "gastos": [
+    {
+      "id": 1,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "categoria": "Alimentación",
+      "descripcion": "Compra",
+      "monto": 4.15,
+      "cuenta": {
+        "id": 6,
+        "banco": "ActivoBank",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "CORRIENTE"
+      }
+    },
+    {
+      "id": 2,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "categoria": "Alimentación",
+      "descripcion": "Café",
+      "monto": 0.7,
+      "cuenta": {
+        "id": 6,
+        "banco": "ActivoBank",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "CORRIENTE"
+      }
+    },
+    {
+      "id": 3,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "categoria": "Alimentación",
+      "descripcion": "Desayuno",
+      "monto": 3.2,
+      "cuenta": {
+        "id": 7,
+        "banco": "Pluxee",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "RESTAURANTE"
+      }
+    },
+    {
+      "id": 5,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "categoria": "Alimentación",
+      "descripcion": "Café 020920252",
+      "monto": 0.7,
+      "cuenta": {
+        "id": 6,
+        "banco": "ActivoBank",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "CORRIENTE"
+      }
+    }
+  ],
   "ingresos": [
     {
       "id": 1,
