@@ -14,3 +14,4 @@ Scripts/
 *log.gz
 */*.iml
 *.iml
+backup_*
