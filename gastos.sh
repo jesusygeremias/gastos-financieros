@@ -39,7 +39,7 @@ docker compose -f "$DOCKER_COMPOSE_FILE" up -d --build
 # Esperar a que PostgreSQL esté listo
 wait_postgres() {
     echo "Esperando a que PostgreSQL esté listo..."
-    max_retries=20
+    max_retries=30
     retry=0
     while [ $retry -lt $max_retries ]; do
         docker exec gastos-postgres pg_isready -U postgres >/dev/null 2>&1
@@ -54,7 +54,7 @@ wait_postgres() {
     return 1
 }
 
-wait_postgres
+wait_postgres || exit 1
 
 # Mostrar logs del backend en modo attached para depuración
 echo "Mostrando logs del backend (Ctrl+C para detener)..."
