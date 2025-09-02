@@ -34,12 +34,12 @@ remove_containers
 
 # Levantar contenedores en modo detached sin borrar volúmenes
 echo "Levantando contenedores (Postgres + Backend + Frontend)..."
-docker compose -f "$DOCKER_COMPOSE_FILE" up -d --build
+docker-compose -f "$DOCKER_COMPOSE_FILE" up -d --build
 
 # Esperar a que PostgreSQL esté listo
 wait_postgres() {
     echo "Esperando a que PostgreSQL esté listo..."
-    max_retries=30
+    max_retries=20
     retry=0
     while [ $retry -lt $max_retries ]; do
         docker exec gastos-postgres pg_isready -U postgres >/dev/null 2>&1
@@ -54,8 +54,8 @@ wait_postgres() {
     return 1
 }
 
-wait_postgres || exit 1
+wait_postgres
 
 # Mostrar logs del backend en modo attached para depuración
 echo "Mostrando logs del backend (Ctrl+C para detener)..."
-docker compose -f "$DOCKER_COMPOSE_FILE" logs -f backend
+docker-compose -f "$DOCKER_COMPOSE_FILE" logs -f backend
