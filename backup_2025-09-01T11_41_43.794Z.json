@@ -1,0 +1,133 @@
+{
+  "cuentas": [
+    {
+      "id": 1,
+      "banco": "Openbank",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "AHORRO"
+    },
+    {
+      "id": 2,
+      "banco": "Openbank",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "CORRIENTE"
+    },
+    {
+      "id": 3,
+      "banco": "Openbank",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "HIPOTECA"
+    },
+    {
+      "id": 4,
+      "banco": "Revolut",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "AHORRO"
+    },
+    {
+      "id": 5,
+      "banco": "Revolut",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "CORRIENTE"
+    },
+    {
+      "id": 6,
+      "banco": "ActivoBank",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "CORRIENTE"
+    },
+    {
+      "id": 7,
+      "banco": "Pluxee",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "RESTAURANTE"
+    },
+    {
+      "id": 8,
+      "banco": "Julia",
+      "saldo": 0,
+      "activo": true,
+      "tipoCuenta": "CORRIENTE"
+    }
+  ],
+  "gastos": [],
+  "ingresos": [
+    {
+      "id": 1,
+      "descripcion": "Inicio",
+      "monto": 2271.68,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "cuenta": {
+        "id": 4,
+        "banco": "Revolut",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "AHORRO"
+      }
+    },
+    {
+      "id": 2,
+      "descripcion": "Inicio",
+      "monto": 120.29,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "cuenta": {
+        "id": 7,
+        "banco": "Pluxee",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "RESTAURANTE"
+      }
+    },
+    {
+      "id": 3,
+      "descripcion": "Inicio",
+      "monto": 703.67,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "cuenta": {
+        "id": 3,
+        "banco": "Openbank",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "HIPOTECA"
+      }
+    },
+    {
+      "id": 4,
+      "descripcion": "Inicio",
+      "monto": 47.61,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "cuenta": {
+        "id": 2,
+        "banco": "Openbank",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "CORRIENTE"
+      }
+    },
+    {
+      "id": 5,
+      "descripcion": "Inicio",
+      "monto": 457.21,
+      "mes": "SEPTIEMBRE",
+      "anio": 2025,
+      "cuenta": {
+        "id": 6,
+        "banco": "ActivoBank",
+        "saldo": 0,
+        "activo": true,
+        "tipoCuenta": "CORRIENTE"
+      }
+    }
+  ]
+}

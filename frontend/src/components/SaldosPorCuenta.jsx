@@ -1,12 +1,6 @@
-export default function SaldosPorCuenta({ data, saldoTotal }) {
-    const logos = {
-        "ActivoBank": "/logos/activobank.png",
-        "Openbank": "/logos/openbank.png",
-        "Revolut": "/logos/revolut.png",
-        "Pluxee": "/logos/pluxee.png"
-        // añadir más bancos según necesites
-    };
+import logos from "../assets/logos";
 
+export default function SaldosPorCuenta({ data, saldoTotal }) {
     const formatMonto = (monto) => {
         return monto.toFixed(2) + " €";
     };
