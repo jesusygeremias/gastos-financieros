@@ -33,6 +33,7 @@ gastos-financieros/
 │   ├── package.json
 │   ├── tailwind.config.js
 │   └── Dockerfile
+│   └── nginx.conf
 ├── docker/               # Configuración Docker Compose y scripts
 │   ├── docker-compose.yml
 │   └── sql/init.sql
