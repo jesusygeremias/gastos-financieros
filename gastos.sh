@@ -73,24 +73,5 @@ wait_postgres() {
 
 wait_postgres
 
-wait_backend() {
-    echo "Esperando backend..."
-    max_retries=20
-    retry=0
-    while [ $retry -lt $max_retries ]; do
-        status=$(curl -k -s -o /dev/null -w "%{http_code}" https://192.168.1.204/api/backup/export)
-        if [ "$status" == "200" ]; then
-            echo "Backend listo vía HTTPS."
-            return 0
-        fi
-        sleep 3
-        retry=$((retry+1))
-    done
-    echo "Backend no respondió."
-    return 1
-}
-
-wait_backend
-
 echo "Mostrando logs del backend y frontend (Ctrl+C para detener)..."
 docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME logs -f backend frontend
