@@ -58,7 +58,7 @@ remove_project_containers
 remove_project_images
 
 # Levantar contenedores en modo detached sin borrar volúmenes
-echo "Levantando contenedores (Postgres + Backend + Frontend)..."
+echo "Levantando contenedores (Postgres + Backend + Frontend HTTPS)..."
 docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME up -d --build
 
 # Esperar a que PostgreSQL esté listo
@@ -81,6 +81,26 @@ wait_postgres() {
 
 wait_postgres
 
-# Mostrar logs del backend en modo attached para depuración
-echo "Mostrando logs del backend (Ctrl+C para detener y borrar contenedores)..."
-docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME logs -f backend
+# Esperar a que el backend esté listo (opcional)
+wait_backend() {
+    echo "Esperando a que el backend esté listo..."
+    max_retries=20
+    retry=0
+    while [ $retry -lt $max_retries ]; do
+        status=$(curl -s -o /dev/null -w "%{http_code}" https://192.168.1.204:443/api/backup/export)
+        if [ "$status" == "200" ]; then
+            echo "Backend listo y accesible vía HTTPS."
+            return 0
+        fi
+        sleep 3
+        retry=$((retry+1))
+    done
+    echo "Backend no respondió después de esperar."
+    return 1
+}
+
+wait_backend
+
+# Mostrar logs del backend y frontend en modo attached para depuración
+echo "Mostrando logs del backend y frontend (Ctrl+C para detener y borrar contenedores)..."
+docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME logs -f backend frontend

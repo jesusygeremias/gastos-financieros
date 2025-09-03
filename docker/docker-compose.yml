@@ -23,8 +23,8 @@ services:
 
   backend:
     build:
-      context: ../backend          # ahora apunta a backend directo
-      dockerfile: Dockerfile       # Dockerfile en backend/
+      context: ../backend
+      dockerfile: Dockerfile
     container_name: gastos-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/misgastos
@@ -36,7 +36,7 @@ services:
       - postgres
     ports:
       - "8080:8080"
-      - "5005:5005"   # puerto de debug
+      - "5005:5005"  # debug
 
   frontend:
     build:
@@ -44,7 +44,7 @@ services:
       dockerfile: Dockerfile
     container_name: gastos-frontend
     ports:
-      - "3000:80"
+      - "443:443"
     depends_on:
       - backend
 
