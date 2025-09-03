@@ -1,9 +1,8 @@
 #!/bin/bash
 
 DOCKER_COMPOSE_FILE="docker/docker-compose.yml"
-PROJECT_NAME="gastos"  # Nombre del proyecto para filtrar contenedores e imágenes
+PROJECT_NAME="gastos"
 
-# Función para eliminar contenedores del proyecto
 remove_project_containers() {
     echo "Eliminando contenedores del proyecto '$PROJECT_NAME'..."
     containers=$(docker ps -aq --filter "name=${PROJECT_NAME}")
@@ -15,7 +14,6 @@ remove_project_containers() {
     fi
 }
 
-# Función para eliminar imágenes del proyecto
 remove_project_images() {
     echo "Eliminando imágenes del proyecto '$PROJECT_NAME'..."
     images=$(docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}" | grep "$PROJECT_NAME" | awk '{print $2}')
@@ -27,80 +25,72 @@ remove_project_images() {
     fi
 }
 
-# Función que se ejecuta al presionar Ctrl+C
 cleanup() {
     echo
-    echo "Ctrl+C detectado, eliminando contenedores del proyecto antes de salir..."
+    echo "Ctrl+C detectado, eliminando contenedores del proyecto..."
     remove_project_containers
     exit 0
 }
 
-# Capturar Ctrl+C
 trap cleanup SIGINT
 
-# Verificar que Docker esté corriendo
 echo "Comprobando si Docker está disponible..."
 max_retries=20
 retry=0
 until docker info >/dev/null 2>&1; do
     if [ $retry -ge $max_retries ]; then
-        echo "Docker no está disponible después de esperar."
+        echo "Docker no está disponible."
         exit 1
     fi
-    echo "Esperando a que Docker esté listo..."
+    echo "Esperando a Docker..."
     sleep 3
     retry=$((retry+1))
 done
-echo "Docker está listo."
+echo "Docker listo."
 
-# Limpiar imágenes y contenedores previos del proyecto
 remove_project_containers
 remove_project_images
 
-# Levantar contenedores en modo detached sin borrar volúmenes
 echo "Levantando contenedores (Postgres + Backend + Frontend HTTPS)..."
 docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME up -d --build
 
-# Esperar a que PostgreSQL esté listo
 wait_postgres() {
-    echo "Esperando a que PostgreSQL esté listo..."
+    echo "Esperando PostgreSQL..."
     max_retries=20
     retry=0
     while [ $retry -lt $max_retries ]; do
         docker exec ${PROJECT_NAME}-postgres pg_isready -U postgres >/dev/null 2>&1
         if [ $? -eq 0 ]; then
-            echo "PostgreSQL está listo."
+            echo "PostgreSQL listo."
             return 0
         fi
         sleep 3
         retry=$((retry+1))
     done
-    echo "PostgreSQL no se pudo iniciar después de esperar."
+    echo "PostgreSQL no respondió."
     return 1
 }
 
 wait_postgres
 
-# Esperar a que el backend esté listo (opcional)
 wait_backend() {
-    echo "Esperando a que el backend esté listo..."
+    echo "Esperando backend..."
     max_retries=20
     retry=0
     while [ $retry -lt $max_retries ]; do
-        status=$(curl -s -o /dev/null -w "%{http_code}" https://192.168.1.204:443/api/backup/export)
+        status=$(curl -k -s -o /dev/null -w "%{http_code}" https://192.168.1.204/api/backup/export)
         if [ "$status" == "200" ]; then
-            echo "Backend listo y accesible vía HTTPS."
+            echo "Backend listo vía HTTPS."
             return 0
         fi
         sleep 3
         retry=$((retry+1))
     done
-    echo "Backend no respondió después de esperar."
+    echo "Backend no respondió."
     return 1
 }
 
 wait_backend
 
-# Mostrar logs del backend y frontend en modo attached para depuración
-echo "Mostrando logs del backend y frontend (Ctrl+C para detener y borrar contenedores)..."
+echo "Mostrando logs del backend y frontend (Ctrl+C para detener)..."
 docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME logs -f backend frontend
