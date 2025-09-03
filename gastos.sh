@@ -59,7 +59,7 @@ remove_project_images
 
 # Levantar contenedores en modo detached sin borrar volúmenes
 echo "Levantando contenedores (Postgres + Backend + Frontend)..."
-docker-compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME up -d --build
+docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME up -d --build
 
 # Esperar a que PostgreSQL esté listo
 wait_postgres() {
@@ -83,4 +83,4 @@ wait_postgres
 
 # Mostrar logs del backend en modo attached para depuración
 echo "Mostrando logs del backend (Ctrl+C para detener y borrar contenedores)..."
-docker-compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME logs -f backend
+docker compose -f "$DOCKER_COMPOSE_FILE" -p $PROJECT_NAME logs -f backend
