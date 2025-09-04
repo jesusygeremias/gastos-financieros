@@ -45,6 +45,13 @@ CREATE TABLE IF NOT EXISTS ingreso_mensual (
     cuenta_id INT REFERENCES cuenta_bancaria(id)
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    enabled BOOLEAN DEFAULT TRUE
+);
+
 -- Opcional: insertar algunas cuentas iniciales
 INSERT INTO cuenta_bancaria (banco, tipo_cuenta, saldo, activo)
 VALUES
@@ -57,3 +64,12 @@ VALUES
 ('Pluxee', 'RESTAURANTE', 0, TRUE),
 ('Julia', 'CORRIENTE', 0, TRUE)
 ON CONFLICT DO NOTHING; -- evita duplicados si se reinicia el contenedor
+
+-- Insertar usuario admin (contraseña admin123 en BCrypt)
+INSERT INTO users (username, password, enabled)
+VALUES (
+    'sergio.ruiz',
+    '$2y$10$anAlI9y4KDtBLQFLl9W6wO4ql.PhlVwZ9XVIoY8FiXPQfI9S8j.6W',
+    true
+);
+
